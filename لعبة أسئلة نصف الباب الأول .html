@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي كيمياء الحديد والسبائك - الصف الثالث الثانوي</title>
+    <!-- مكتبات المؤثرات البصرية وتصدير الشهادة كصورة -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            /* النمط الداكن العصري (الافتراضي) */
+            --bg-gradient: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 100%);
+            --card-bg: #111827;
+            --text-main: #f9fafb;
+            --text-muted: #a5b4fc;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --option-bg: #1f2937;
+            --option-border: #374151;
+            --status-bg: #182234;
+            --shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            --header-gradient: linear-gradient(90deg, #818cf8, #38bdf8);
+        }
+
+        body.theme-vibrant {
+            /* النمط الملون */
+            --bg-gradient: linear-gradient(135deg, #e0e7ff 0%, #f5f3ff 50%, #ecfdf5 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #1e1b4b;
+            --text-muted: #4338ca;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --option-bg: #f8faff;
+            --option-border: #c7d2fe;
+            --status-bg: #eef2ff;
+            --shadow: 0 15px 35px rgba(79, 70, 229, 0.15);
+            --header-gradient: linear-gradient(90deg, #4f46e5, #06b6d4);
+        }
+
+        body.theme-light {
+            /* النمط الأبيض */
+            --bg-gradient: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --option-bg: #ffffff;
+            --option-border: #e2e8f0;
+            --status-bg: #f1f5f9;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --header-gradient: linear-gradient(90deg, #2563eb, #3b82f6);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* الشريط العلوي لتغيير المظهر */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .theme-switcher {
+            display: flex;
+            gap: 6px;
+            background: var(--status-bg);
+            padding: 5px;
+            border-radius: 30px;
+            border: 1px solid var(--option-border);
+        }
+
+        .theme-btn {
+            border: none;
+            background: none;
+            font-size: 0.88rem;
+            padding: 5px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .theme-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        /* الترويسة */
+        header {
+            text-align: center;
+            border-bottom: 2px dashed var(--option-border);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            background: var(--header-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.65rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .designer-tag {
+            background: var(--status-bg);
+            color: var(--primary);
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            display: inline-block;
+            font-weight: bold;
+            border: 1px solid var(--option-border);
+        }
+
+        /* شاشة البداية وإدخال الاسم */
+        .name-input-box {
+            background: var(--status-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--option-border);
+            margin-bottom: 22px;
+            text-align: center;
+        }
+
+        .name-input-box label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.05rem;
+            color: var(--text-main);
+        }
+
+        .name-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 1.05rem;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+        }
+
+        .name-input:focus {
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+        }
+
+        /* بطاقات المستويات */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 16px;
+        }
+
+        .level-card {
+            background: var(--status-bg);
+            border: 2px solid var(--option-border);
+            border-radius: 18px;
+            padding: 20px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.25s ease;
+        }
+
+        .level-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .level-badge {
+            background: var(--primary);
+            color: #fff;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .level-card h3 {
+            color: var(--text-main);
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+        }
+
+        .level-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .q-count-tag {
+            font-weight: bold;
+            color: #10b981;
+            font-size: 0.9rem;
+        }
+
+        /* شاشة الاستعداد (جاري البدء + نصيحة) */
+        .ready-box {
+            text-align: center;
+            padding: 28px 20px;
+            background: var(--status-bg);
+            border: 2px dashed var(--primary);
+            border-radius: 18px;
+        }
+
+        .ready-box h2 {
+            color: var(--text-main);
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+        }
+
+        .ready-stats {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .tip-card {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid #f59e0b;
+            border-radius: 14px;
+            padding: 15px 18px;
+            margin: 0 auto 24px auto;
+            max-width: 600px;
+            text-align: right;
+        }
+
+        .tip-card strong {
+            color: #f59e0b;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .tip-card p {
+            color: var(--text-main);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 13px 32px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: scale(1.03);
+        }
+
+        /* شاشة اللعب */
+        .status-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: var(--status-bg);
+            padding: 12px 16px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            border: 1px solid var(--option-border);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .badge-player { color: #38bdf8; }
+        .badge-score { color: #10b981; }
+        .badge-lives { color: #f87171; }
+        .badge-skips { color: #fbbf24; }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--option-border);
+            border-radius: 10px;
+            margin-bottom: 18px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-box {
+            font-size: 1.18rem;
+            line-height: 1.65;
+            margin-bottom: 18px;
+            color: var(--text-main);
+            background: var(--status-bg);
+            padding: 18px;
+            border-radius: 14px;
+            border-right: 5px solid var(--primary);
+            font-weight: 700;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-btn {
+            background: var(--option-bg);
+            border: 2px solid var(--option-border);
+            color: var(--text-main);
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: right;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            background: var(--status-bg);
+        }
+
+        .option-letter {
+            background: var(--status-bg);
+            border: 1px solid var(--option-border);
+            color: var(--primary);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .option-btn.correct {
+            background: #064e3b !important;
+            border-color: #10b981 !important;
+            color: #ecfdf5 !important;
+        }
+
+        .option-btn.wrong {
+            background: #7f1d1d !important;
+            border-color: #ef4444 !important;
+            color: #fef2f2 !important;
+            animation: shake 0.3s;
+        }
+
+        .explanation-box {
+            display: none;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid #10b981;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            min-width: 110px;
+        }
+
+        .btn-skip { background: #78350f; color: #fde68a; }
+        .btn-next { background: #059669; color: #ffffff; display: none; }
+        .btn-end { background: #7f1d1d; color: #fecaca; }
+
+        /* شاشة النهاية وشهادة التقدير */
+        .end-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .score-card {
+            background: var(--status-bg);
+            border: 2px solid var(--primary);
+            border-radius: 18px;
+            padding: 26px 20px;
+            margin-bottom: 18px;
+            color: var(--text-main);
+        }
+
+        .student-cert-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #38bdf8;
+            margin: 10px 0;
+        }
+
+        .final-score {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #10b981;
+            margin: 10px 0;
+        }
+
+        .share-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-share {
+            padding: 13px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-whatsapp { background: #25d366; }
+        .btn-facebook { background: #1877f2; }
+        .btn-image { background: #8b5cf6; }
+        .btn-restart { background: var(--primary); }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+    </style>
+</head>
+<body class="theme-dark">
+
+    <div class="container">
+        <!-- شريط تغيير المظهر -->
+        <div class="top-bar">
+            <span style="font-size: 0.9rem; font-weight: bold; color: var(--text-muted);">المظهر:</span>
+            <div class="theme-switcher">
+                <button class="theme-btn" id="btn-theme-vibrant" onclick="setTheme('vibrant')">ملون</button>
+                <button class="theme-btn" id="btn-theme-light" onclick="setTheme('light')">أبيض</button>
+                <button class="theme-btn active" id="btn-theme-dark" onclick="setTheme('dark')">داكن</button>
+            </div>
+        </div>
+
+        <!-- ترويسة اللعبة -->
+        <header>
+            <h1>⚗️ تحدي الكيمياء: الحديد والسبائك وأكاسيد الحديد</h1>
+            <div class="designer-tag">
+                مصمم اللعبة: أ/ عبد الرحمن عبد الله - 01021779644
+            </div>
+        </header>
+
+        <!-- 1. شاشة البداية (إدخال الاسم واختيار المستوى) -->
+        <div id="start-screen">
+            <div class="name-input-box">
+                <label for="player-name-input">✍️ اكتب اسمك يا بطل لتسجيله في شهادة التقدير:</label>
+                <input type="text" id="player-name-input" class="name-input" placeholder="اكتب اسمك هنا...">
+            </div>
+
+            <div class="levels-grid">
+                <div class="level-card" onclick="prepareLevel(0)">
+                    <span class="level-badge">المستوى الأول</span>
+                    <h3>استخلاص الحديد والأفران</h3>
+                    <p>خامات الحديد، عمليات التجهيز (التكسير، التلبيد، التركيز، التحميص)، وأفران الاختزال والإنتاج.</p>
+                    <div class="q-count-tag">📝 21 سؤالاً</div>
+                </div>
+
+                <div class="level-card" onclick="prepareLevel(1)">
+                    <span class="level-badge" style="background: #f59e0b;">المستوى الثاني</span>
+                    <h3>السبائك وأنواعها</h3>
+                    <p>السبائك البينية والاستبدالية والبينفلزية، تركيبها، شروط تكوينها، واستخداماتها.</p>
+                    <div class="q-count-tag">📝 14 سؤالاً</div>
+                </div>
+
+                <div class="level-card" onclick="prepareLevel(2)">
+                    <span class="level-badge" style="background: #10b981;">المستوى الثالث</span>
+                    <h3>تفاعلات الحديد وأكاسيده</h3>
+                    <p>تفاعلات الحديد مع اللافلزات والأحماض، وأكاسيد الحديد الثلاثة وطرق تحضيرها والتمييز بينها.</p>
+                    <div class="q-count-tag">📝 29 سؤالاً</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. شاشة الاستعداد (جاري البدء + نصيحة) -->
+        <div id="ready-screen" class="hidden">
+            <div class="ready-box">
+                <h2 id="ready-greeting">أهلاً بك يا بطل!</h2>
+                <h3 id="ready-level-title" style="color: var(--primary); margin-bottom: 10px;">المستوى الأول</h3>
+                <p class="ready-stats" id="ready-level-info"></p>
+
+                <div class="tip-card">
+                    <strong>💡 نصيحة كيميائية قبل البدء:</strong>
+                    <p id="chemistry-tip-text"></p>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn-primary" onclick="startActualQuiz()">▶️ بدء التحدي الآن</button>
+                    <button class="btn-action" style="background: var(--option-bg); color: var(--text-main); border: 1px solid var(--option-border); max-width: 160px;" onclick="goHome()">🔙 تغيير المستوى</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. شاشة اللعب -->
+        <div id="quiz-screen" class="hidden">
+            <div class="status-bar">
+                <span class="badge-player">👤 <span id="display-player-name">الطالب</span></span>
+                <span class="badge-score">🏆 النقاط: <span id="score-val">0</span></span>
+                <span class="badge-lives">❤️ القلوب: <span id="lives-val">5/5</span></span>
+                <span class="badge-skips">⏩ التخطي: <span id="skips-val">3/3</span></span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+
+            <div class="question-box" id="question-text">جارٍ تحميل السؤال...</div>
+
+            <div class="options-grid" id="options-container"></div>
+
+            <div class="explanation-box" id="explanation-box"></div>
+
+            <div class="actions-bar">
+                <button class="btn-action btn-skip" id="btn-skip" onclick="skipQuestion()">⏩ تخطي السؤال (3)</button>
+                <button class="btn-action btn-next" id="btn-next" onclick="nextQuestion()">السؤال التالي ⬅️</button>
+                <button class="btn-action btn-end" onclick="endGame('manual')">🛑 إنهاء التحدي</button>
+            </div>
+        </div>
+
+        <!-- 4. شاشة النتيجة وشهادة التقدير -->
+        <div id="end-screen" class="end-screen">
+            <div class="score-card" id="export-card">
+                <h2>🎓 شهادة تقدير وإنجاز</h2>
+                <p style="color: var(--text-muted); margin-top: 4px;" id="cert-level-title"></p>
+                <div class="student-cert-name" id="cert-student-name"></div>
+                <div class="final-score" id="final-score-val">0 نقطة</div>
+                <p id="evaluation-text" style="font-weight: bold; font-size: 1.1rem; line-height: 1.6;"></p>
+                <div style="margin-top: 16px; border-top: 1px dashed var(--option-border); padding-top: 10px; font-size: 0.88rem; color: var(--text-muted);">
+                    إعداد وتصميم الأستاذ: عبد الرحمن عبد الله | هاتف: 01021779644
+                </div>
+            </div>
+
+            <div class="share-buttons">
+                <button class="btn-share btn-image" onclick="downloadResultImage()">📸 تحميل الشهادة كصورة للستوري</button>
+                <button class="btn-share btn-whatsapp" onclick="shareWhatsApp()">💬 إرسال النتيجة عبر واتساب</button>
+                <button class="btn-share btn-facebook" onclick="shareFacebook()">🌐 نسخ النتيجة للنشر على فيسبوك</button>
+                <button class="btn-share btn-restart" onclick="goHome()">🔄 العودة لاختيار مستوى آخر</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // المؤثرات الصوتية
+        let audioCtx;
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                if (type === 'correct') {
+                    [659.25, 880].forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.12);
+                        gain.gain.setValueAtTime(0, now + i * 0.12);
+                        gain.gain.linearRampToValueAtTime(0.18, now + i * 0.12 + 0.02);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.35);
+                        osc.connect(gain); gain.connect(ctx.destination);
+                        osc.start(now + i * 0.12); osc.stop(now + i * 0.12 + 0.35);
+                    });
+                } else if (type === 'wrong') {
+                    [160, 120].forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.15);
+                        gain.gain.setValueAtTime(0.2, now + idx * 0.15);
+                        gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.15 + 0.14);
+                        osc.connect(gain); gain.connect(ctx.destination);
+                        osc.start(now + idx * 0.15); osc.stop(now + idx * 0.15 + 0.14);
+                    });
+                } else if (type === 'win') {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                        gain.gain.setValueAtTime(0, now + idx * 0.1);
+                        gain.gain.linearRampToValueAtTime(0.15, now + idx * 0.1 + 0.03);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.45);
+                        osc.connect(gain); gain.connect(ctx.destination);
+                        osc.start(now + idx * 0.1); osc.stop(now + idx * 0.1 + 0.45);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        // قاعدة بيانات المستويات الثلاثة (64 سؤالاً كاملاً)
+        const levelsData = [
+            {
+                title: "المستوى الأول: استخلاص الحديد والأفران",
+                tips: [
+                    "تذكر أن عمليات التكسير والتلبيد والتركيز تهدف لتحسين الخواص الفيزيائية والميكانيكية، بينما التحميص يحسن الخواص الكيميائية!",
+                    "في الفرن العالي العامل المختزل هو غاز أول أكسيد الكربون (CO)، أما في فرن مدركس فهو الغاز المائي (CO + H₂).",
+                    "ناتج تحميص أي خام حديد في الهواء الساخن هو دائماً الهيماتيت (Fe₂O₃) ذو اللون الأحمر."
+                ],
+                questions: [
+                    { q: "خام الحديد ذو اللون الأحمر هو ............. بينما خام الحديد ذو اللون الأسود هو :", options: ["الهيماتيت – المجنتيت", "الهيماتيت – السيدريت", "السيمنتيت – المجنتيت", "السيدريت – المجنتيت"], ans: 0, exp: "الهيماتيت (Fe₂O₃) لونه أحمر داكن، والمجنتيت (Fe₃O₄) لونه أسود." },
+                    { q: "الصيغة الكيميائية لخام السيدريت :", options: ["FeS₂", "Fe₂O₃", "Fe₃O₄", "FeCO₃"], ans: 3, exp: "السيدريت هو كربونات الحديد II وصيغته FeCO₃." },
+                    { q: "المركب الناتج من اتحاد كاتيونات Fe⁺³ مع أنيونات O⁻² يكون لونه :", options: ["أصفر", "أزرق", "أخضر", "أحمر"], ans: 3, exp: "ينتج أكسيد الحديد III (Fe₂O₃) وهو الهيماتيت ذو اللون الأحمر." },
+                    { q: "تتوقف مدى صلاحية الخام المستخدم عند استخلاص الحديد على :", options: ["نسبة الحديد في الخام", "نوع الشوائب المختلطة به", "نوعية بعض العناصر الضارة المختلطة بالخام", "جميع ما سبق"], ans: 3, exp: "جميع هذه العوامل تحدد الجدوى الاقتصادية وصلاحية الخام للاستخلاص." },
+                    { q: "كلاً مما يأتي من عمليات تجهيز الخام ما عدا :", options: ["التكسير", "التركيز", "التلبيد", "الاختزال"], ans: 3, exp: "الاختزال هو المرحلة الثانية من استخلاص الحديد وليس من مرحلة تجهيز الخام." },
+                    { q: "تتم عملية التركيز لخامات الحديد عن طريق :", options: ["خاصية التوتر السطحي", "الفصل المغناطيسي", "الفصل الكهربي", "جميع ما سبق"], ans: 3, exp: "تستخدم الطرق الثلاث (التوتر السطحي والفصل المغناطيسي والكهربي) لتركيز الخام." },
+                    { q: "إحدى العمليات الآتية لا تهدف إلى تحسين الخواص الفيزيائية والميكانيكية للخام وهي :", options: ["التكسير", "التحميص", "التلبيد", "التركيز والتنقية"], ans: 1, exp: "التحميص يهدف لتحسين الخواص الكيميائية للخام، بينما الباقي يحسن الخواص الفيزيائية والميكانيكية." },
+                    { q: "أياً مما يلي يعبر عن التسلسل الصحيح لعمليات تجهيز خامات الحديد المستخدمة في الفرن العالي ؟", options: ["التكسير – التحميص – الفصل الكهربي – التلبيد", "التحميص – التكسير – التلبيد – التوتر السطحي", "التكسير – التلبيد – الفصل المغناطيسي – التحميص", "التوتر السطحي – التلبيد – التحميص – التكسير"], ans: 2, exp: "الترتيب الصحيح: تكسير ثم تلبيد ثم تركيز (فصل مغناطيسي) ثم تحميص." },
+                    { q: "عند التقطير الإتلافي لكربونات الحديد II يتكون :", options: ["أكسيد الحديد III", "أكسيد الحديد المغناطيسي", "أكسيد الحديد II", "فلز الحديد"], ans: 2, exp: "التقطير الإتلافي (التسخين بمعزل عن الهواء) يحلل FeCO₃ إلى FeO + CO₂." },
+                    { q: "عند تحميص خام السيدريت يكون الناتج النهائي هو :", options: ["FeO", "Fe₃O₄", "Fe₂O₃", "Fe(OH)₂"], ans: 2, exp: "التحميص يتم في الهواء الساخن فيتأكسد FeO الناتج إلى Fe₂O₃." },
+                    { q: "من العمليات التي تمر بها خامات الحديد وتؤدي إلى تقليل كتلة الخام (بطرد الرطوبة والغازات):", options: ["التحميص", "التلبيد", "التكسير", "التوتر السطحي"], ans: 0, exp: "التحميص يطرد الرطوبة وثاني أكسيد الكربون فتقل كتلة الخام." },
+                    { q: "قطعة من خام الحديد كتلتها 2 kg مرت بعملية فيزيائية فأصبحت كتلتها 1.8 kg فأي من هذه العمليات أجريت عليها ؟", options: ["التكسير", "التلبيد", "التركيز", "التحميص"], ans: 2, exp: "التركيز عملية فيزيائية تفصل الشوائب فتقل الكتلة." },
+                    { q: "تتم عملية اختزال خامات الحديد في الفرن العالي باستخدام :", options: ["غاز CO", "غاز CO₂", "مخلوط من غازي (N₂ + CO)", "مخلوط من غازي (H₂ + CO)"], ans: 0, exp: "العامل المختزل في الفرن العالي هو أول أكسيد الكربون (CO)." },
+                    { q: "عند تسخين أكسيد الحديد III في وجود الغاز المائي فإنه يختزل إلى :", options: ["أكسيد الحديد II", "أكسيد الحديد المغناطيسي", "الحديد", "خليط من أكسيدي الحديد (II, III)"], ans: 2, exp: "في فرن مدركس يختزل الغاز المائي (CO + H₂) الهيماتيت إلى حديد إسفنجي." },
+                    { q: "تعتمد صناعة الصلب على عملية :", options: ["التخلص من شوائب أفران الاختزال", "اختزال خام الحديد", "إضافة عناصر للحديد لتحسين خواصه", "الإجابتان (أ) ، (ج) صحيحتان"], ans: 3, exp: "إنتاج الصلب يعتمد على التخلص من الشوائب وإضافة عناصر تكسب الصلب الخواص المطلوبة." },
+                    { q: "تتم عملية صناعة الصلب باستخدام :", options: ["الفرن المفتوح", "الفرن الكهربي", "المحول الأكسجيني", "جميع ما سبق"], ans: 3, exp: "تستخدم الأفران الثلاثة في إنتاج الصلب." },
+                    { q: "يتم تحويل عنصر صلب إلى غاز مختزل لخام الحديد في :", options: ["فرن مدركس", "الفرن العالي", "الفرن المفتوح", "الفرن الكهربي"], ans: 1, exp: "في الفرن العالي يتحول فحم الكوك الصلب (C) إلى غاز أول أكسيد الكربون (CO)." },
+                    { q: "أي العمليات التالية يستخدم للتخلص من الكبريت الموجود في خام الحديد ؟", options: ["الفصل الكهربي – التلبيد", "الفصل المغناطيسي – التحميص", "الفصل المغناطيسي – التلبيد", "التكسير – التحميص"], ans: 1, exp: "الفصل المغناطيسي يفصل الشوائب، والتحميص يؤكسد الكبريت ويطرده في صورة غاز SO₂." },
+                    { q: "العمليات التي تتم على نواتج تنظيف الأفران العالية للحصول على سبيكة بينية على الترتيب هي :", options: ["تركيز – أكسدة – اختزال", "تكسير – اختزال – إنتاج الصلب", "تلبيد – اختزال – إنتاج الصلب", "تكسير – تحميص – اختزال"], ans: 2, exp: "نواتج تنظيف الأفران خامات ناعمة تُجمع بالتلبيد، ثم تُختزل، ثم تدخل أفران إنتاج الصلب لإضافة الكربون." },
+                    { q: "الأفران التي يتم فيها تحويل أكسيد الحديد III إلى سبيكة حديد وكربون على الترتيب تكون :", options: ["الفرن المفتوح ثم فرن مدركس", "المحول الأكسجيني ثم الفرن العالي", "الفرن العالي ثم فرن مدركس", "الفرن العالي ثم الفرن المفتوح"], ans: 3, exp: "الفرن العالي يختزل Fe₂O₃ إلى حديد، ثم الفرن المفتوح ينتج سبيكة الصلب (حديد وكربون)." },
+                    { q: "السبيكة التي تتكون من العنصر الذي يبدأ عنده ازدواج إلكترونات (d) والعنصر الذي يضم أكبر عدد من الإلكترونات المفردة في الدورة الرابعة تستخدم في :", options: ["أواني الطهي", "خط السكة الحديد", "الميج المقاتلة", "ملفات التسخين"], ans: 0, exp: "يبدأ الازدواج عند الحديد (3d⁶)، وأكبر إلكترونات مفردة في الكروم (6 مفردة)، وسبيكتهما (الاستانلس ستيل) تستخدم في أواني الطهي." }
+                ]
+            },
+            {
+                title: "المستوى الثاني: السبائك وأنواعها",
+                tips: [
+                    "فرق جيداً بين الحديد الصلب (حديد + كربون منفصل = سبيكة بينية) والسيمنتيت (Fe₃C متحد كيميائياً = سبيكة بينفلزية)!",
+                    "شرط السبيكة الاستبدالية: تقارب أنصاف الأقطار والخواص الكيميائية والشكل البلوري (مثل الحديد والكروم).",
+                    "النحاس الأصفر (نحاس + خارصين)، بينما البرونز (نحاس + قصدير)."
+                ],
+                questions: [
+                    { q: "سبيكة الحديد مع الكروم من السبائك :", options: ["البينية", "الاستبدالية", "البينفلزية", "الإجابتان (أ) ، (ب) صحيحتان"], ans: 1, exp: "لتقارب نصف القطر الذري للحديد والكروم تتكون سبيكة استبدالية." },
+                    { q: "في الجدول الدوري: Na يليه (1) في الدورة الثالثة، وتحت (1) يقع العنصر (3) [K/Ca]، وفي الفئة p يقع الألومنيوم (2)، وفي السلسلة الانتقالية الأولى يقع (4) و(5) [الحديد والنيكل/النحاس]. العنصران اللذان يكونان سبيكة الديورألومين هما :", options: ["(4) ، (5)", "(3) ، (4)", "(1) ، (2)", "(2) ، (5)"], ans: 3, exp: "الديورألومين تتكون من الألومنيوم (2) مع النيكل أو النحاس (5)." },
+                    { q: "نوع من السبائك تتحد فيه العناصر المكونة للسبيكة اتحاداً كيميائياً :", options: ["السبائك البينية", "السبائك الاستبدالية", "سبائك المركبات البينفلزية", "الإجابتان (أ) ، (ب) صحيحتان"], ans: 2, exp: "في السبائك البينفلزية تتحد العناصر كيميائياً مكونة مركبات صيغتها لا تخضع لقوانين التكافؤ." },
+                    { q: "يكون الحديد مع الكربون المنفصل سبائك بينية لأن :", options: ["لهما نفس البناء البلوري", "حجمهما الذري متقارب", "حجم ذرات الكربون صغير", "درجة انصهارهما مرتفعة"], ans: 2, exp: "صغر حجم ذرات الكربون يسمح لها بالدخول في المسافات البينية للشبكة البلورية للحديد." },
+                    { q: "تتكون سبيكة النحاس الأصفر من عنصري :", options: ["النحاس والقصدير", "النحاس والذهب", "النحاس والخارصين", "النحاس والحديد"], ans: 2, exp: "النحاس الأصفر سبيكة من النحاس والخارصين، بينما النحاس والقصدير هما البرونز." },
+                    { q: "سبيكة الحديد الصلب من السبائك ............. والتي يضاف فيها ............. إلى الحديد .", options: ["الاستبدالية – النيكل", "البينفلزية – الكربون", "البينية – الرصاص", "البينية – الكربون"], ans: 3, exp: "الحديد الصلب سبيكة بينية من الحديد والكربون." },
+                    { q: "الصيغة الكيميائية لسبيكة الرصاص والذهب هي :", options: ["Au₂Pb", "AuPb", "AuPb₂", "AuPb₃"], ans: 0, exp: "سبيكة الرصاص والذهب من السبائك البينفلزية وصيغتها Au₂Pb." },
+                    { q: "الصيغة الكيميائية للسيمنتيت هي :", options: ["Fe₃C", "FeC₃", "FeC", "AuPb₃"], ans: 0, exp: "السيمنتيت (كربيد الحديد) سبيكة بينفلزية صيغتها Fe₃C." },
+                    { q: "السيمنتيت من السبائك :", options: ["البينية", "الاستبدالية", "البينفلزية", "الإجابتان (أ ، ج) معاً"], ans: 2, exp: "السيمنتيت (Fe₃C) يتكون باتحاد كيميائي بين الحديد والكربون فهو سبيكة بينفلزية." },
+                    { q: "يؤدي اختلاف ............. العناصر إلى جعلها أكثر صلابة عند وجودها في صورة سبائك بينية :", options: ["أنصاف أقطار", "كثافة", "درجة انصهار", "درجة غليان"], ans: 0, exp: "اختلاف أنصاف الأقطار (ذرات صغيرة في مسافات ذرات كبيرة) يعيق انزلاق الطبقات ويزيد الصلابة." },
+                    { q: "النحاس الأصفر أحد أنواع السبائك ويتم ترسيبه كهربياً على المقابض من محلول يحتوي على :", options: ["أيونات النحاس وأيونات الخارصين", "أيونات النحاس وأيونات قصدير", "ذرات نحاس وذرات الخارصين", "ذرات نحاس وذرات قصدير"], ans: 0, exp: "الترسيب الكهربي يتم من محلول إلكتروليتي يحتوي على أيونات النحاس وأيونات الخارصين." },
+                    { q: "الصلب الذي لا يصدأ (الاستانليس ستيل) سبيكة تتكون من الحديد و :", options: ["الكوبلت", "المنجنيز", "النحاس", "الكروم"], ans: 3, exp: "الاستانلس ستيل سبيكة استبدالية من الحديد والكروم." },
+                    { q: "أربعة عناصر أنصاف أقطارها: A=1.15, B=1.16, C=1.62, D=1.17 أنجستروم. كل مما يلي يمكن أن يكون سبائك استبدالية ما عدا :", options: ["A , C", "A , B", "D , A", "B , D"], ans: 0, exp: "العنصر C نصف قطره كبير جداً (1.62) مقارنة بباقي العناصر فلا يمكنه تكوين سبيكة استبدالية معها." },
+                    { q: "A يقع في 3A، و B يكون مع القصدير البرونز، و C حفاز في صناعة النشادر، و D غير انتقالي في الفئة d. لتغطية جسم معدني بالنحاس الأصفر نستخدم :", options: ["D , B", "C , A", "B , A", "D , C"], ans: 0, exp: "B هو النحاس (يكوّن البرونز) و D هو الخارصين (غير انتقالي في الفئة d)، ومعاً يكونان النحاس الأصفر." }
+                ]
+            },
+            {
+                title: "المستوى الثالث: تفاعلات الحديد وأكاسيده",
+                tips: [
+                    "الكلور عامل مؤكسد قوي يعطي كلوريد الحديد III مع الحديد، بينما HCl المخفف يعطي كلوريد الحديد II لتصاعد الهيدروجين المختزل.",
+                    "أكسيد الحديد المغناطيسي (Fe₃O₄) أكسيد مختلط يتفاعل مع الأحماض المركزة الساخنة فقط ويعطي خليطاً من أملاح الحديد II و III.",
+                    "للتمييز بين FeO و Fe₂O₃ نستخدم حمض مخفف: يذوب FeO ولا يتفاعل Fe₂O₃."
+                ],
+                questions: [
+                    { q: "يختلف الحديد عن باقي العناصر التي تسبقه في السلسلة الانتقالية الأولى في أنه :", options: ["لا يعطي حالة تأكسد (+2)", "لا يستخدم كعامل حفاز", "لا يكون سبائك", "لا يعطي حالة التأكسد (+8)"], ans: 3, exp: "الحديد لا يفقد جميع إلكترونات 4s و 3d الثمانية، عكس العناصر من السكانديوم للمنجنيز." },
+                    { q: "عند تسخين الحديد في الهواء لدرجة الاحمرار يتكون :", options: ["أكسيد حديد ثنائي", "أكسيد حديد ثلاثي", "أكسيد حديد مغناطيسي", "أكسيد حديد أحمر"], ans: 2, exp: "3Fe + 2O₂ → Fe₃O₄ (أكسيد الحديد المغناطيسي)." },
+                    { q: "عند إمرار بخار الماء الساخن على الحديد المسخن لدرجة الاحمرار ينتج هيدروجين و :", options: ["Fe(OH)₂", "FeO", "Fe₂O₃", "Fe₃O₄"], ans: 3, exp: "3Fe + 4H₂O → Fe₃O₄ + 4H₂." },
+                    { q: "عند تفاعل الحديد مع الكبريت يتكون :", options: ["Fe₂(SO₄)₃", "FeSO₄", "Fe₂S₃", "FeS"], ans: 3, exp: "الكبريت عامل مؤكسد ضعيف فيتكون كبريتيد الحديد II (FeS)." },
+                    { q: "عند تسخين الحديد مع الكلور يتكون :", options: ["كلوريد الحديد II", "كلوريد الحديد III", "خليط منهما", "لا توجد إجابة صحيحة"], ans: 1, exp: "الكلور عامل مؤكسد قوي فيؤكسد كلوريد الحديد II المتكون إلى كلوريد الحديد III." },
+                    { q: "يعتبر الكلور عند تفاعله مع الحديد عامل :", options: ["مؤكسد", "حفاز", "مساعد", "مختزل"], ans: 0, exp: "الكلور يؤكسد الحديد من 0 إلى +3 فهو عامل مؤكسد." },
+                    { q: "عند تفاعل الحديد مع حمض الهيدروكلوريك المخفف يتكون :", options: ["كلوريد الحديد II فقط", "كلوريد الحديد II وهيدروجين", "كلوريد حديد III فقط", "كلوريد حديد III وهيدروجين"], ans: 1, exp: "Fe + 2HCl → FeCl₂ + H₂ (والهيدروجين الناتج عامل مختزل يبقي الملح ثنائياً)." },
+                    { q: "يذوب الحديد في الأحماض المخففة وينتج :", options: ["أملاح حديد III", "أكسيد حديد II", "أملاح حديد II", "أكسيد حديد III"], ans: 2, exp: "ينتج دائماً أملاح حديد II ويتصاعد غاز الهيدروجين." },
+                    { q: "عند تفاعل الحديد مع حمض الكبريتيك المركز الساخن يتكون :", options: ["كبريتات الحديد II فقط", "كبريتات الحديد III فقط", "كبريتات الحديد II , III", "ثاني وثالث أكسيد الكبريت"], ans: 2, exp: "ينتج خليط من كبريتات الحديد II و III بالإضافة إلى SO₂ و H₂O." },
+                    { q: "طبقة خمول الحديد عند تفاعله مع حمض النيتريك المركز هي :", options: ["نيترات حديد", "كبريتيد حديد", "أكسيد حديد", "هيدروكسيد حديد"], ans: 2, exp: "يتكون غشاء رقيق غير مسامي من الأكسيد يحمي الفلز من استمرار التفاعل." },
+                    { q: "يزال خمول الحديد بواسطة :", options: ["السحب", "الحك", "HCl dil", "الإجابتان (ب) ، (ج) صحيحتان"], ans: 3, exp: "تزال طبقة الأكسيد بالحك أو بإضافة حمض الهيدروكلوريك المخفف." },
+                    { q: "عند تسخين أوكسالات الحديد II بمعزل عن الهواء يسود لونها بسبب تكون :", options: ["أكسيد الحديد II", "أكسيد الحديد III", "أكسيد الحديد المغناطيسي", "كربيد الحديد II"], ans: 0, exp: "ينتج FeO الأسود بالإضافة إلى غازي CO و CO₂." },
+                    { q: "عند تسخين أوكسالات الحديد II في الهواء يتكون :", options: ["أكسيد الحديد II", "أكسيد الحديد III", "أكسيد الحديد المغناطيسي", "لا توجد إجابة صحيحة"], ans: 1, exp: "يتكون FeO أولاً ثم يتأكسد في الهواء الساخن إلى Fe₂O₃." },
+                    { q: "تحويل أوكسالات الحديد (II) إلى أكسيد الحديد (III) يتضمن عمليتي :", options: ["اختزال ثم إحلال بسيط", "انحلال حراري ثم اختزال", "اختزال ثم انحلال حراري", "انحلال حراري ثم أكسدة"], ans: 3, exp: "تنحل الأوكسالات حرارياً إلى FeO ثم يتأكسد FeO إلى Fe₂O₃." },
+                    { q: "عند تسخين كبريتات الحديد II بشدة يتكون :", options: ["أكسيد حديد III", "ثاني أكسيد الكبريت", "ثالث أكسيد الكبريت", "جميع ما سبق"], ans: 3, exp: "2FeSO₄ → Fe₂O₃ + SO₂ + SO₃." },
+                    { q: "يتضمن تفاعل الانحلال الحراري لكبريتات الحديد II التغير التالي :", options: ["Fe⁺² → Fe⁺³", "(O₄)⁻⁸ → (O₃)⁻⁶", "S⁺⁶ → S⁺⁴", "جميع ما سبق"], ans: 3, exp: "يتأكسد الحديد (+2 إلى +3) ويُختزل الكبريت (+6 إلى +4)." },
+                    { q: "عند تسخين هيدروكسيد الحديد III لدرجة أعلى من 200°C ينتج :", options: ["أكسيد حديد II", "أكسيد حديد مغناطيسي", "أكسيد حديد III", "هيدروكسيد الحديد II"], ans: 2, exp: "2Fe(OH)₃ → Fe₂O₃ + 3H₂O." },
+                    { q: "يمكن الحصول على أكسيد الحديد II من تسخين :", options: ["أوكسالات الحديد II", "كبريتات الحديد II", "أكسيد الحديد III", "كلوريد الحديد II"], ans: 0, exp: "بتسخين أوكسالات الحديد II بمعزل عن الهواء." },
+                    { q: "عند اختزال أكسيد الحديد المغناطيسي عند درجة 400 : 700°C ينتج :", options: ["FeSO₄", "FeO", "Fe₂O₃", "Fe"], ans: 1, exp: "الاختزال بين 400 و 700 درجة مئوية يعطي دائماً FeO." },
+                    { q: "إحدى هذه العبارات لا تنطبق على تحضير أكسيد الحديد II :", options: ["تسخين أوكسالات الحديد II بمعزل عن الهواء", "تسخين كبريتات الحديد II بمعزل عن الهواء", "اختزال أكسيد الحديد III بالهيدروجين في درجة حرارة من 400 : 700°C", "اختزال أكسيد الحديد المغناطيسي بالهيدروجين في درجة حرارة من 400 : 700°C"], ans: 1, exp: "تسخين كبريتات الحديد II يعطي Fe₂O₃ وليس FeO." },
+                    { q: "يتفاعل أكسيد الحديد II مع الأحماض المخففة منتجاً :", options: ["ملح حديد III وماء", "ملح حديد III وهيدروجين", "ملح حديد II وماء", "ملح حديد II وهيدروجين"], ans: 2, exp: "FeO + H₂SO₄ → FeSO₄ + H₂O." },
+                    { q: "للتمييز بين أكسيد الحديد II وأكسيد الحديد III يضاف إلى كل منهما :", options: ["حمض كبريتيك مركز", "حمض هيدروكلوريك مخفف", "حمض هيدروكلوريك مركز", "حمض نيتريك مركز"], ans: 1, exp: "الحمض المخفف يذيب FeO ولا يتفاعل مع Fe₂O₃." },
+                    { q: "عند تسخين أوكسالات الحديد II بمعزل عن الهواء ثم معالجة المادة الصلبة الناتجة بحمض الكبريتيك المخفف يتكون :", options: ["كبريتات الحديد II وماء", "أكسيد الحديد III وغاز CO₂", "كبريتات الحديد III وماء", "أكسيد الحديد II وغازي CO , CO₂"], ans: 0, exp: "يتكون FeO أولاً، ثم يتفاعل مع H₂SO₄ المخفف مكوناً FeSO₄ وماء." },
+                    { q: "ينتج أكسيد الحديد III من تسخين المركبات الآتية بمعزل عن الهواء ما عدا :", options: ["كبريتات الحديد II", "هيدروكسيد الحديد III", "أوكسالات الحديد II", "أكسيد الحديد III المتهدرت"], ans: 2, exp: "أوكسالات الحديد II تعطي FeO عند تسخينها بمعزل عن الهواء." },
+                    { q: "عند تسخين كبريتات الحديد (II) ثم معالجة المادة الصلبة الناتجة بحمض الكبريتيك المركز يتكون :", options: ["كبريتات الحديد II وماء", "كبريتات الحديد III وكبريتات الحديد II", "كبريتات الحديد II وهيدروجين", "كبريتات الحديد III وماء"], ans: 3, exp: "تسخين FeSO₄ يعطي Fe₂O₃، ومعالجته بالحمض المركز تعطي كبريتات الحديد III وماء." },
+                    { q: "عند تفاعل أكسيد الحديد المغناطيسي مع حمض الكبريتيك المركز الساخن ينتج :", options: ["كبريتات الحديد II", "كبريتات الحديد III وماء", "كبريتات الحديد II وكبريتات الحديد III وماء", "كبريتات الحديد II وكبريتات الحديد III والهيدروجين"], ans: 2, exp: "لأنه أكسيد مختلط من أكسيدي الحديد II و III." },
+                    { q: "أكسيد الحديد الأسود أكسيد مختلط لذلك عند تفاعله مع الأحماض المركزة يعطي :", options: ["أملاح حديد II", "أملاح حديد III", "أكسيد حديد III", "(أ) ، (ب) معاً"], ans: 3, exp: "يعطي خليطاً من أملاح الحديد II وأملاح الحديد III والماء." },
+                    { q: "عند تفاعل أكسيد الحديد المغناطيسي مع حمض الهيدروكلوريك المركز الساخن ينتج :", options: ["كلوريد الحديد II", "كلوريد الحديد III وماء", "كلوريد الحديد II وكلوريد الحديد III وماء", "كلوريد الحديد II وكلوريد الحديد III وهيدروجين"], ans: 2, exp: "Fe₃O₄ + 8HCl → FeCl₂ + 2FeCl₃ + 4H₂O." },
+                    { q: "تسخين المركب A ينتج غازاً يستخدم في اختزال أكاسيد الحديد، وتسخين المركب B ينتج غازاً يخضر ورقة مبللة بثاني كرومات البوتاسيوم المحمضة. المركبان A و B هما :", options: ["A: كبريتات حديد II ، B: هيدروكسيد حديد III", "A: كربونات حديد II ، B: كلوريد حديد III", "A: أوكسالات حديد II ، B: كبريتات حديد II", "A: كبريتات حديد III ، B: أكسيد حديد III"], ans: 2, exp: "أوكسالات الحديد II تعطي غاز CO المختزل، وكبريتات الحديد II تعطي غاز SO₂ الذي يخضر ثاني كرومات البوتاسيوم." }
+                ]
+            }
+        ];
+
+        // متغيرات حالة اللعبة
+        let playerName = "بطل الكيمياء";
+        let currentLevelIndex = 0;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let lives = 5;
+        let skips = 3;
+        let isAnswered = false;
+        const letters = ["أ", "ب", "ج", "د"];
+
+        function setTheme(theme) {
+            document.body.className = `theme-${theme}`;
+            document.querySelectorAll(".theme-btn").forEach(btn => btn.classList.remove("active"));
+            document.getElementById(`btn-theme-${theme}`).classList.add("active");
+        }
+
+        // الانتقال إلى شاشة الاستعداد (جاري البدء + نصيحة)
+        function prepareLevel(levelIdx) {
+            const inputVal = document.getElementById("player-name-input").value.trim();
+            playerName = inputVal !== "" ? inputVal : "بطل الكيمياء";
+
+            currentLevelIndex = levelIdx;
+            const level = levelsData[levelIdx];
+            const randomTip = level.tips[Math.floor(Math.random() * level.tips.length)];
+
+            document.getElementById("start-screen").classList.add("hidden");
+            document.getElementById("end-screen").style.display = "none";
+            document.getElementById("quiz-screen").classList.add("hidden");
+            document.getElementById("ready-screen").classList.remove("hidden");
+
+            document.getElementById("ready-greeting").innerText = `أهلاً بك يا ${playerName}! 🚀`;
+            document.getElementById("ready-level-title").innerText = level.title;
+            document.getElementById("ready-level-info").innerHTML = `
+                عدد الأسئلة في هذا المستوى: <strong>${level.questions.length} سؤالاً</strong> (بدون وقت محدد)<br>
+                لديك <strong>5 قلوب ❤️</strong> للمحاولات و <strong>3 تخطيات ⏩</strong>. هل أنت مستعد؟
+            `;
+            document.getElementById("chemistry-tip-text").innerText = randomTip;
+        }
+
+        // بدء الاختبار الفعلي
+        function startActualQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            lives = 5;
+            skips = 3;
+
+            document.getElementById("ready-screen").classList.add("hidden");
+            document.getElementById("quiz-screen").classList.remove("hidden");
+            document.getElementById("display-player-name").innerText = playerName;
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isAnswered = false;
+            const level = levelsData[currentLevelIndex];
+            const qObj = level.questions[currentQuestionIndex];
+
+            updateStatusBar();
+            const progressPercent = (currentQuestionIndex / level.questions.length) * 100;
+            document.getElementById("progress-fill").style.width = `${progressPercent}%`;
+
+            document.getElementById("question-text").innerText = `${currentQuestionIndex + 1}. ${qObj.q}`;
+
+            const optionsContainer = document.getElementById("options-container");
+            optionsContainer.innerHTML = "";
+
+            qObj.options.forEach((opt, idx) => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerHTML = `<span class="option-letter">${letters[idx]}</span> <span>${opt}</span>`;
+                btn.onclick = () => checkAnswer(idx, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById("explanation-box").style.display = "none";
+            document.getElementById("btn-next").style.display = "none";
+        }
+
+        function checkAnswer(selectedIdx, selectedBtn) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const level = levelsData[currentLevelIndex];
+            const qObj = level.questions[currentQuestionIndex];
+            const allBtns = document.querySelectorAll(".option-btn");
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selectedIdx === qObj.ans) {
+                selectedBtn.classList.add("correct");
+                score += 10;
+                playSound('correct');
+                confetti({ particleCount: 30, spread: 50, origin: { y: 0.8 } });
+            } else {
+                selectedBtn.classList.add("wrong");
+                allBtns[qObj.ans].classList.add("correct");
+                lives--;
+                playSound('wrong');
+            }
+
+            updateStatusBar();
+
+            const expBox = document.getElementById("explanation-box");
+            expBox.innerHTML = `<strong>💡 التوضيح:</strong> ${qObj.exp}`;
+            expBox.style.display = "block";
+
+            if (lives <= 0) {
+                setTimeout(() => endGame('lives'), 1300);
+            } else {
+                document.getElementById("btn-next").style.display = "block";
+            }
+        }
+
+        function skipQuestion() {
+            if (isAnswered || skips <= 0) return;
+            skips--;
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            const level = levelsData[currentLevelIndex];
+            currentQuestionIndex++;
+            if (currentQuestionIndex < level.questions.length) {
+                loadQuestion();
+            } else {
+                endGame('completed');
+            }
+        }
+
+        function updateStatusBar() {
+            document.getElementById("score-val").innerText = score;
+            document.getElementById("lives-val").innerText = `${lives}/5`;
+            document.getElementById("skips-val").innerText = `${skips}/3`;
+
+            const skipBtn = document.getElementById("btn-skip");
+            skipBtn.innerText = `⏩ تخطي السؤال (${skips})`;
+            if (skips <= 0) {
+                skipBtn.style.opacity = "0.5";
+                skipBtn.style.cursor = "not-allowed";
+            } else {
+                skipBtn.style.opacity = "1";
+                skipBtn.style.cursor = "pointer";
+            }
+        }
+
+        function endGame(reason) {
+            playSound('win');
+            const level = levelsData[currentLevelIndex];
+            const maxScore = level.questions.length * 10;
+            const percentage = (score / maxScore) * 100;
+
+            document.getElementById("quiz-screen").classList.add("hidden");
+            document.getElementById("end-screen").style.display = "block";
+
+            document.getElementById("cert-level-title").innerText = level.title;
+            document.getElementById("cert-student-name").innerText = `الطالب / ${playerName}`;
+            document.getElementById("final-score-val").innerText = `${score} / ${maxScore} نقطة`;
+
+            let msg = "";
+            if (reason === 'lives') {
+                msg = `❤️ انتهت محاولاتك الخمس يا ${playerName}! لكن مجهودك رائع، راجع التوضيحات وحاول مرة أخرى لتصل للقمة 💪`;
+                document.getElementById("evaluation-text").style.color = "#f87171";
+            } else if (percentage >= 90) {
+                msg = `🌟 ألف مبروك يا ${playerName}! أداء أسطوري ومستوى عبقري في الكيمياء يشرف معلمك 🏆`;
+                document.getElementById("evaluation-text").style.color = "#10b981";
+                confetti({ particleCount: 150, spread: 100 });
+            } else if (percentage >= 70) {
+                msg = `👏 أحسنت يا ${playerName}! مستوى متميز جداً وقريب من الدرجة النهائية، استمر في التفوق!`;
+                document.getElementById("evaluation-text").style.color = "#38bdf8";
+                confetti({ particleCount: 70, spread: 70 });
+            } else {
+                msg = `💪 بداية موفقة يا ${playerName}! استمر في التدريب ومراجعة الملاحظات وستحقق أعلى الدرجات بإذن الله.`;
+                document.getElementById("evaluation-text").style.color = "#fbbf24";
+            }
+
+            document.getElementById("evaluation-text").innerHTML = msg;
+        }
+
+        function downloadResultImage() {
+            const card = document.getElementById("export-card");
+            html2canvas(card, { scale: 2.5 }).then(canvas => {
+                const link = document.createElement("a");
+                link.download = `شهادة_${playerName}_${score}_نقطة.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+        }
+
+        function shareWhatsApp() {
+            const level = levelsData[currentLevelIndex];
+            const text = `أنا ${playerName} حققتُ ${score} نقطة في تحدي (${level.title})! ⚗️🏆\nتحت إشراف الأستاذ: عبد الرحمن عبد الله (01021779644).`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function shareFacebook() {
+            const level = levelsData[currentLevelIndex];
+            const text = `أنهيتُ بنجاح تحدي (${level.title}) وحققتُ ${score} نقطة! 🚀\nالطالب: ${playerName} | إعداد: أ/ عبد الرحمن عبد الله - 01021779644`;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("تم نسخ نص النتيجة بنجاح! يمكنك الآن لصقها في منشور على فيسبوك.");
+            });
+        }
+
+        function goHome() {
+            document.getElementById("quiz-screen").classList.add("hidden");
+            document.getElementById("ready-screen").classList.add("hidden");
+            document.getElementById("end-screen").style.display = "none";
+            document.getElementById("start-screen").classList.remove("hidden");
+        }
+
+        window.onload = () => {
+            setTheme('dark');
+            document.body.addEventListener('click', () => getAudioContext(), { once: true });
+        };
+    </script>
+</body>
+</html>
